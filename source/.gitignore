@@ -20,3 +20,7 @@ ExternalDLL/Debug/
 *.opensdf
 ExternalDLL/ExternalDLL/Release/
 ExternalDLL/Release/
+
+*.suo
+*.vcxproj
+*.vcxproj.filters

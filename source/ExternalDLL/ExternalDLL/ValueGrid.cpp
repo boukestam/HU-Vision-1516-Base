@@ -32,3 +32,11 @@ double ValueGrid::getTotalValue() const{
 	}
 	return total;
 }
+
+void ValueGrid::setValue(int x, int y, double value) const{
+	data[x + y * width] = value;
+}
+
+void ValueGrid::setValue(int i, double value) const{
+	data[i] = value;
+}

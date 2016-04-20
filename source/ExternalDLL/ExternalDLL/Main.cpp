@@ -28,10 +28,34 @@ int main(int argc, char * argv[]) {
 
 	RGBImageStudent rgbImage;
 	ImageIO::loadImage("E:/faces/face2.jpg", rgbImage);
+
+	std::cout << "Loaded image" << std::endl;
 	
 	IntensityImage& intensityImage = rgbImage.toGrayScale();
 
-	ImageIO::showImage(intensityImage);
+	std::cout << "Grayed image" << std::endl;
+
+	StudentPreProcessing pp;
+
+	/*
+	IntensityImage* blurredImage = pp.stepBlur(intensityImage);
+
+	std::cout << "Blurred image" << std::endl;
+
+	ImageIO::showImage(*blurredImage);
+	*/
+
+	
+	IntensityImage* edgeImage = pp.stepEdgeDetection(intensityImage);
+
+	std::cout << "Edged image" << std::endl;
+
+	IntensityImage* thresholdImage = pp.stepThresholding(*edgeImage);
+
+	std::cout << "Thresholded image" << std::endl;
+
+	ImageIO::showImage(*thresholdImage);
+	
 
 	/*
 	//ImageFactory::setImplementation(ImageFactory::DEFAULT);

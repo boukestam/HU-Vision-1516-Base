@@ -5,7 +5,10 @@
 */
 
 #pragma once
+
 #include "PreProcessing.h"
+#include "ValueGrid.h"
+
 class StudentPreProcessing : public PreProcessing {
 public:
 	IntensityImage * stepToIntensityImage(const RGBImage &image) const;

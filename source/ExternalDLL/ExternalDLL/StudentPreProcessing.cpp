@@ -3,6 +3,8 @@
 #include "IntensityImageStudent.h"
 #include <algorithm>
 
+#include <iostream>
+
 IntensityImage * StudentPreProcessing::stepToIntensityImage(const RGBImage &image) const {
 	return &image.toGrayScale();
 }
@@ -11,7 +13,7 @@ IntensityImage * StudentPreProcessing::stepToIntensityImage(const ValueGrid &gri
 	IntensityImage * newIntensityImage = new IntensityImageStudent(grid.getWidth(), grid.getHeight());
 	int gridSize = grid.getSize();
 	for (int i = 0; i < gridSize; i++){
-		newIntensityImage->set(i, (Intensity)std::min(grid.getValue(i), 255.0));
+		newIntensityImage->setPixel(i, (Intensity)grid.getValue(i));
 	}
 	
 	return newIntensityImage;
@@ -33,7 +35,14 @@ IntensityImage * StudentPreProcessing::stepBlur(const IntensityImage & image) co
 
 	ValueGrid mask = { &maskData[0][0], maskWidth, maskHeight };
 
-	return maskImage(image, mask);
+	ValueGrid* maskedValues = maskImage(image, mask);
+
+	int numPixels = maskedValues->getWidth() * maskedValues->getHeight();
+	for (int i = 0; i < numPixels; i++){
+		maskedValues->setValue(i, maskedValues->getValue(i) / 9);
+	}
+
+	return stepToIntensityImage(*maskedValues);
 }
 
 IntensityImage * StudentPreProcessing::stepEdgeDetection(const IntensityImage &image) const {
@@ -53,17 +62,34 @@ IntensityImage * StudentPreProcessing::stepEdgeDetection(const IntensityImage &i
 
 	IntensityImage* blurredImage = stepBlur(image);
 
-	ValueGrid edgeValues = maskImage(*blurredImage, mask);
-
-	int numPixels = edgeValues.getWidth() * edgeValues.getHeight();
+	ValueGrid* edgeValues = maskImage(*blurredImage, mask);
+	
+	int numPixels = edgeValues->getWidth() * edgeValues->getHeight();
 
 	for (int i = 0; i < numPixels; i++){
-		double scaledValue = edgeValues.getValue(i) - maskMin / 12;
+		edgeValues->setValue(i, edgeValues->getValue(i) - maskMin / 12);
 	}
+
+	return stepToIntensityImage(*edgeValues);
 }
 
 IntensityImage * StudentPreProcessing::stepThresholding(const IntensityImage &image) const {
-	return nullptr;
+	IntensityImage* newImage = new IntensityImageStudent(image.getWidth(), image.getHeight());
+
+	int numPixels = image.getWidth() * image.getHeight();
+
+	for (int i = 0; i < numPixels; i++){
+		Intensity value = image.getPixel(i);
+
+		if (value > 150){
+			newImage->setPixel(i, 255);
+		}
+		else{
+			newImage->setPixel(i, 0);
+		}
+	}
+
+	return newImage;
 }
 
 ValueGrid * StudentPreProcessing::maskImage(const IntensityImage &intensityImage, const ValueGrid maskImage) const {
@@ -83,7 +109,7 @@ ValueGrid * StudentPreProcessing::maskImage(const IntensityImage &intensityImage
 					totalValue += intensityImage.getPixel(x + maskX, y + maskY) * maskImage.getValue(maskX, maskY);
 				}
 			}
-			data[x + y*newImageHeight] = totalValue;
+			data[x + y*newImageWidth] = totalValue;
 		}
 	}
 

@@ -10,6 +10,7 @@ class StudentPreProcessing : public PreProcessing {
 public:
 	IntensityImage * stepToIntensityImage(const RGBImage &image) const;
 	IntensityImage * stepScaleImage(const IntensityImage &image) const;
+	IntensityImage * StudentPreProcessing::stepBlur(const IntensityImage & image) const;
 	IntensityImage * stepEdgeDetection(const IntensityImage &image) const;
 	IntensityImage * stepThresholding(const IntensityImage &image) const;
 	IntensityImage * maskImage(const IntensityImage &image, const Mask maskImage) const;

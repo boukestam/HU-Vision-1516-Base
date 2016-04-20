@@ -6,6 +6,16 @@ IntensityImage * StudentPreProcessing::stepToIntensityImage(const RGBImage &imag
 	return &image.toGrayScale();
 }
 
+IntensityImage * StudentPreProcessing::stepToIntensityImage(const ValueGrid &grid) const {
+	IntensityImage * newIntensityImage = new IntensityImageStudent(grid.getWidth(), grid.getHeight());
+	int gridSize = grid.getSize();
+	for (int i = 0; i < gridSize; i++){
+		newIntensityImage->set(i, grid.getValue(i));
+	}
+	
+	return newIntensityImage;
+}
+
 IntensityImage * StudentPreProcessing::stepScaleImage(const IntensityImage &image) const {
 	return nullptr;
 }

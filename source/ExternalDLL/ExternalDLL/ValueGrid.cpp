@@ -12,6 +12,10 @@ int ValueGrid::getHeight() const{
 	return height;
 }
 
+int ValueGrid::getSize() const{
+	return width*height;
+}
+
 double ValueGrid::getValue(int x, int y) const{
 	return data[x + y * width];
 }

@@ -8,6 +8,7 @@ public:
 	double getValue(int x, int y) const;
 	double getValue(int i) const;
 	double getTotalValue() const;
+	int getSize() const;
 private:
 	double * data;
 	int width;

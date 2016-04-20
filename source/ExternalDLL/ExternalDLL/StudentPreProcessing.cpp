@@ -18,7 +18,7 @@ IntensityImage * StudentPreProcessing::stepThresholding(const IntensityImage &im
 	return nullptr;
 }
 
-IntensityImage * StudentPreProcessing::maskImage(const IntensityImage &intensityImage, const ValueGrid maskImage) const {
+ValueGrid * StudentPreProcessing::maskImage(const IntensityImage &intensityImage, const ValueGrid maskImage) const {
 	const int totalWeight = maskImage.getTotalValue();
 	const int offsetX = (maskImage.getWidth() - 1) / 2;
 	const int offsetY = (maskImage.getHeight() - 1) / 2;
@@ -26,7 +26,7 @@ IntensityImage * StudentPreProcessing::maskImage(const IntensityImage &intensity
 	const int newImageWidth = intensityImage.getWidth() - offsetX * 2;
 	const int newImageHeight = intensityImage.getHeight() - offsetY * 2;
 
-	IntensityImage * newIntensityImage = new IntensityImageStudent(newImageWidth, newImageHeight);
+	double * data = new double[newImageWidth*newImageHeight];
 	for (int x = 0; x < newImageWidth; x++){
 		for (int y = 0; y < newImageHeight; y++){
 			int totalValue = 0;
@@ -35,10 +35,9 @@ IntensityImage * StudentPreProcessing::maskImage(const IntensityImage &intensity
 					totalValue += intensityImage.getPixel(x + maskX, y + maskY) * maskImage.getValue(maskX, maskY);
 				}
 			}
-			newIntensityImage->setPixel(x, y, totalValue);
+			data[x + y*newImageHeight] = totalValue;
 		}
 	}
-	
 
-	return newIntensityImage;
+	return new ValueGrid(data, newImageWidth, newImageHeight);
 }

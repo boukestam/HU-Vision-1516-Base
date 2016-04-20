@@ -1,6 +1,7 @@
 #include "StudentPreProcessing.h"
 #include "ValueGrid.h"
 #include "IntensityImageStudent.h"
+#include <algorithm>
 
 IntensityImage * StudentPreProcessing::stepToIntensityImage(const RGBImage &image) const {
 	return &image.toGrayScale();
@@ -10,7 +11,7 @@ IntensityImage * StudentPreProcessing::stepToIntensityImage(const ValueGrid &gri
 	IntensityImage * newIntensityImage = new IntensityImageStudent(grid.getWidth(), grid.getHeight());
 	int gridSize = grid.getSize();
 	for (int i = 0; i < gridSize; i++){
-		newIntensityImage->set(i, grid.getValue(i));
+		newIntensityImage->set(i, (Intensity)std::min(grid.getValue(i), 255.0));
 	}
 	
 	return newIntensityImage;

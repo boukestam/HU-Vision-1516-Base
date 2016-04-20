@@ -1,9 +1,20 @@
 #include "StudentPreProcessing.h"
 #include "ValueGrid.h"
 #include "IntensityImageStudent.h"
+#include <algorithm>
 
 IntensityImage * StudentPreProcessing::stepToIntensityImage(const RGBImage &image) const {
 	return &image.toGrayScale();
+}
+
+IntensityImage * StudentPreProcessing::stepToIntensityImage(const ValueGrid &grid) const {
+	IntensityImage * newIntensityImage = new IntensityImageStudent(grid.getWidth(), grid.getHeight());
+	int gridSize = grid.getSize();
+	for (int i = 0; i < gridSize; i++){
+		newIntensityImage->set(i, (Intensity)std::min(grid.getValue(i), 255.0));
+	}
+	
+	return newIntensityImage;
 }
 
 IntensityImage * StudentPreProcessing::stepScaleImage(const IntensityImage &image) const {
@@ -55,7 +66,7 @@ IntensityImage * StudentPreProcessing::stepThresholding(const IntensityImage &im
 	return nullptr;
 }
 
-IntensityImage * StudentPreProcessing::maskImage(const IntensityImage &intensityImage, const ValueGrid maskImage) const {
+ValueGrid * StudentPreProcessing::maskImage(const IntensityImage &intensityImage, const ValueGrid maskImage) const {
 	const int totalWeight = maskImage.getTotalValue();
 	const int offsetX = (maskImage.getWidth() - 1) / 2;
 	const int offsetY = (maskImage.getHeight() - 1) / 2;
@@ -63,7 +74,7 @@ IntensityImage * StudentPreProcessing::maskImage(const IntensityImage &intensity
 	const int newImageWidth = intensityImage.getWidth() - offsetX * 2;
 	const int newImageHeight = intensityImage.getHeight() - offsetY * 2;
 
-	IntensityImage * newIntensityImage = new IntensityImageStudent(newImageWidth, newImageHeight);
+	double * data = new double[newImageWidth*newImageHeight];
 	for (int x = 0; x < newImageWidth; x++){
 		for (int y = 0; y < newImageHeight; y++){
 			int totalValue = 0;
@@ -72,10 +83,9 @@ IntensityImage * StudentPreProcessing::maskImage(const IntensityImage &intensity
 					totalValue += intensityImage.getPixel(x + maskX, y + maskY) * maskImage.getValue(maskX, maskY);
 				}
 			}
-			newIntensityImage->setPixel(x, y, totalValue);
+			data[x + y*newImageHeight] = totalValue;
 		}
 	}
-	
 
-	return newIntensityImage;
+	return new ValueGrid(data, newImageWidth, newImageHeight);
 }

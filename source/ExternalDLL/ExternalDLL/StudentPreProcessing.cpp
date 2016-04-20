@@ -20,7 +20,7 @@ IntensityImage * StudentPreProcessing::stepBlur(const IntensityImage & image) co
 		{ 1, 1, 1 }
 	};
 
-	Mask mask = { &maskData[0][0], maskWidth, maskHeight };
+	ValueGrid mask = { &maskData[0][0], maskWidth, maskHeight };
 
 	return maskImage(image, mask);
 }
@@ -35,11 +35,20 @@ IntensityImage * StudentPreProcessing::stepEdgeDetection(const IntensityImage &i
 		{ 0.5, 1, 0.5 }
 	};
 
-	Mask mask = { &maskData[0][0], maskWidth, maskHeight };
+	double maskMin = -6 * 256;
+	double maskScale = 12;
+
+	ValueGrid mask = { &maskData[0][0], maskWidth, maskHeight };
 
 	IntensityImage* blurredImage = stepBlur(image);
 
-	return maskImage(*blurredImage, mask);
+	ValueGrid edgeValues = maskImage(*blurredImage, mask);
+
+	int numPixels = edgeValues.getWidth() * edgeValues.getHeight();
+
+	for (int i = 0; i < numPixels; i++){
+		double scaledValue = edgeValues.getValue(i) - maskMin / 12;
+	}
 }
 
 IntensityImage * StudentPreProcessing::stepThresholding(const IntensityImage &image) const {

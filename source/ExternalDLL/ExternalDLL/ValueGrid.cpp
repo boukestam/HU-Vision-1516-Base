@@ -16,6 +16,10 @@ double ValueGrid::getValue(int x, int y) const{
 	return data[x + y * width];
 }
 
+double ValueGrid::getValue(int i) const{
+	return data[i];
+}
+
 double ValueGrid::getTotalValue() const{
 	const int numWeights = width*height;
 	double total=0;

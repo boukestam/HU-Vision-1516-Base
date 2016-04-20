@@ -6,6 +6,7 @@ public:
 	int getWidth() const;
 	int getHeight() const;
 	double getValue(int x, int y) const;
+	double getValue(int i) const;
 	double getTotalValue() const;
 private:
 	double * data;

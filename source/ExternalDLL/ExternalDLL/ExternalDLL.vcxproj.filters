@@ -117,6 +117,9 @@
     <ClInclude Include="ValueGrid.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="basetimer.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Image.cpp">
@@ -195,6 +198,9 @@
       <Filter>Source Files\private\disableautocomplete</Filter>
     </ClCompile>
     <ClCompile Include="ValueGrid.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="basetimer.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

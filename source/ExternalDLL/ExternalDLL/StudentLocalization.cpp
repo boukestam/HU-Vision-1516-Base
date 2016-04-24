@@ -17,8 +17,6 @@ bool StudentLocalization::stepFindHead(const IntensityImage &image, FeatureMap &
 		std::cout << "Could not find topOfHeadY!" << std::endl;
 		return false;
 	}
-	Feature * featureHeadTop = new Feature(Feature::FEATURE_HEAD_TOP, Point2D<double>(image.getWidth() / 2, topOfHeadY));
-	features.putFeature(*featureHeadTop);
 
 	// Find sides of head
 	
@@ -26,28 +24,37 @@ bool StudentLocalization::stepFindHead(const IntensityImage &image, FeatureMap &
 	int previousRightX = -1;
 	for (int y = topOfHeadY; y < image.getHeight(); y+=10) {
 		Histogram & sideHeadHistogram = getPixelCountHistogram(image, Axis::X, y, y+10);
+
 		//Left
 		int leftX = -1;
 		for (int i = 0; i < sideHeadHistogram.getSize(); i++) {
 			int value = sideHeadHistogram.getValue(i);
 			if (value > 2) {
-				leftX = value;
+				leftX = i;
 				break;
 			}
 		}
+
 		//Right
 		int rightX = -1;
 		for (int i = sideHeadHistogram.getSize()-1; i >= 0; i--) {
 			int value = sideHeadHistogram.getValue(i);
 			if (value > 2) {
-				
-				rightX = value;
+				rightX = i;
 				break;
 			}
 		}
+
+		if (leftX == -1 || rightX == -1) {
+			continue;
+		}
+
 		int headWidth = rightX - leftX;
 		int previousWidth = previousRightX - previousLeftX;
 		if (headWidth < previousWidth) {
+			Feature * featureHeadTop = new Feature(Feature::FEATURE_HEAD_TOP, Point2D<double>(previousLeftX + (headWidth / 2), topOfHeadY));
+			features.putFeature(*featureHeadTop);
+
 			Feature * featureHeadLeft = new Feature(Feature::FEATURE_HEAD_LEFT_SIDE, Point2D<double>(previousLeftX, y));
 			Feature * featureHeadRight = new Feature(Feature::FEATURE_HEAD_RIGHT_SIDE, Point2D<double>(previousRightX, y));
 			features.putFeature(*featureHeadLeft);
@@ -61,13 +68,6 @@ bool StudentLocalization::stepFindHead(const IntensityImage &image, FeatureMap &
 
 	return false;
 }
-
-if (rightY == -1 || leftY == -1) {
-	std::cout << "Could not find rightY or leftY!" << std::endl;
-	return false;
-}
-
-return true;
 
 bool StudentLocalization::stepFindNoseMouthAndChin(const IntensityImage &image, FeatureMap &features) const {
 	return false;
@@ -86,9 +86,11 @@ bool StudentLocalization::stepFindExactEyes(const IntensityImage &image, Feature
 }
 
 Histogram & StudentLocalization::getPixelCountHistogram(const IntensityImage & image, Axis axis, int start, int end) const {
-	int otherAxisSize = axis == Axis::Y ? image.getWidth() : image.getHeight();
-	Histogram & histogram = *new Histogram(axis, otherAxisSize);
-	for (int pos1 = 0; pos1 < otherAxisSize; pos1++) {
+	int histogramSize = axis == Axis::Y ? image.getHeight() : image.getWidth();
+
+	Histogram & histogram = *new Histogram(axis, histogramSize);
+
+	for (int pos1 = 0; pos1 < histogramSize; pos1++) {
 		int value = 0;
 		for (int pos2 = start; pos2 < end; pos2++) {
 			int x = axis == Axis::Y ? pos2 : pos1;

@@ -22,7 +22,20 @@
 void drawFeatureDebugImage(IntensityImage &image, FeatureMap &features);
 bool executeSteps(DLLExecution * executor);
 
+void debugMark(IntensityImage* image, int x, int y) {
+	if (x < 0 || x >= image->getWidth() || y < 0 || y >= image->getHeight()) {
+		return;
+	}
+
+	for (int xx = x - 3; xx <= x + 3; xx++) {
+		for (int yy = y - 3; yy <= y + 3; yy++){
+			image->setPixel(xx, yy, 127);
+		}
+	}
+}
+
 int main(int argc, char * argv[]) {
+	ImageFactory::setImplementation(ImageFactory::STUDENT);
 	ImageIO::debugFolder = "../../../testsets";
 	ImageIO::isInDebugMode = true; //If set to false the ImageIO class will skip any image save function calls
 
@@ -37,15 +50,6 @@ int main(int argc, char * argv[]) {
 
 	StudentPreProcessing pp;
 
-	/*
-	IntensityImage* blurredImage = pp.stepBlur(intensityImage);
-
-	std::cout << "Blurred image" << std::endl;
-
-	ImageIO::showImage(*blurredImage);
-	*/
-
-	
 	IntensityImage* edgeImage = pp.stepEdgeDetection(intensityImage);
 
 	std::cout << "Edged image" << std::endl;
@@ -54,8 +58,24 @@ int main(int argc, char * argv[]) {
 
 	std::cout << "Thresholded image" << std::endl;
 
-	ImageIO::showImage(*thresholdImage);
+	StudentLocalization sl;
+	DefaultLocalization dl;
+	FeatureMap featureMap;
+
+	bool result = dl.stepFindHead(*thresholdImage, featureMap);
 	
+	std::cout << "Find head result: " << (result ? "True" : "False") << std::endl;
+
+	
+	debugMark(thresholdImage, featureMap.getFeature(Feature::FEATURE_HEAD_TOP).getX(), featureMap.getFeature(Feature::FEATURE_HEAD_TOP).getY());
+	debugMark(thresholdImage, featureMap.getFeature(Feature::FEATURE_HEAD_LEFT_SIDE).getX(), featureMap.getFeature(Feature::FEATURE_HEAD_LEFT_SIDE).getY());
+	debugMark(thresholdImage, featureMap.getFeature(Feature::FEATURE_HEAD_RIGHT_SIDE).getX(), featureMap.getFeature(Feature::FEATURE_HEAD_RIGHT_SIDE).getY());
+
+	std::cout << "Top of head: " << featureMap.getFeature(Feature::FEATURE_HEAD_TOP).getX() << ", " << featureMap.getFeature(Feature::FEATURE_HEAD_TOP).getY() << std::endl;
+	std::cout << "Left of head: " << featureMap.getFeature(Feature::FEATURE_HEAD_LEFT_SIDE).getX() << ", " << featureMap.getFeature(Feature::FEATURE_HEAD_LEFT_SIDE).getY() << std::endl;
+	std::cout << "Right of head: " << featureMap.getFeature(Feature::FEATURE_HEAD_RIGHT_SIDE).getX() << ", " << featureMap.getFeature(Feature::FEATURE_HEAD_RIGHT_SIDE).getY() << std::endl;
+
+	ImageIO::showImage(*thresholdImage);
 
 	/*
 	//ImageFactory::setImplementation(ImageFactory::DEFAULT);

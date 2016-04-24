@@ -14,7 +14,7 @@ enum class Axis {
 
 class Histogram {
 public:
-	Histogram(Axis axis, int size) : axis{ axis }, data{ new int[size] } {}
+	Histogram(Axis axis, int size) : axis{ axis }, data{ new int[size] }, size{ size } {}
 
 	~Histogram() {
 		delete[] data;

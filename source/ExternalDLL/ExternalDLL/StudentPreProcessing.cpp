@@ -81,7 +81,7 @@ IntensityImage * StudentPreProcessing::stepThresholding(const IntensityImage &im
 	for (int i = 0; i < numPixels; i++){
 		Intensity value = image.getPixel(i);
 
-		if (value > 150){
+		if (value > 140){
 			newImage->setPixel(i, 255);
 		}
 		else{

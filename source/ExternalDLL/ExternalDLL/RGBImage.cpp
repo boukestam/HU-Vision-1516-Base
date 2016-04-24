@@ -20,7 +20,7 @@ void RGBImage::set(const int width, const int height) {
 	Image::set(width, height);
 }
 
-IntensityImage& RGBImage::toGrayScale() {
+IntensityImage& RGBImage::toGrayScale() const {
 	// these values are from a paper about grayscale algorithms for face detecting:
 	// https://www.researchgate.net/publication/232627417_On_conversion_from_color_to_gray-scale_images_for_face_detection
 	static const double alpha = 0.4331;

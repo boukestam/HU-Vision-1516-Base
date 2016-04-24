@@ -75,6 +75,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="Algorithm.h" />
+    <ClInclude Include="basetimer.h" />
     <ClInclude Include="DefaultExtraction.h" />
     <ClInclude Include="DefaultLocalization.h" />
     <ClInclude Include="DefaultPreProcessing.h" />
@@ -104,8 +105,10 @@
     <ClInclude Include="StudentExtraction.h" />
     <ClInclude Include="StudentLocalization.h" />
     <ClInclude Include="StudentPreProcessing.h" />
+    <ClInclude Include="ValueGrid.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="basetimer.cpp" />
     <ClCompile Include="DefaultExtraction.cpp" />
     <ClCompile Include="DefaultLocalization.cpp" />
     <ClCompile Include="DefaultPreProcessing.cpp" />
@@ -131,6 +134,7 @@
     <ClCompile Include="StudentExtraction.cpp" />
     <ClCompile Include="StudentLocalization.cpp" />
     <ClCompile Include="StudentPreProcessing.cpp" />
+    <ClCompile Include="ValueGrid.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

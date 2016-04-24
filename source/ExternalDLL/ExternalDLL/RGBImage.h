@@ -24,5 +24,5 @@ public:
 	virtual RGB getPixel(int x, int y) const = 0;
 	virtual RGB getPixel(int i) const = 0;
 
-	IntensityImage& toGrayScale();
+	IntensityImage& toGrayScale() const;
 };

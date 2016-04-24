@@ -23,11 +23,11 @@ void drawFeatureDebugImage(IntensityImage &image, FeatureMap &features);
 bool executeSteps(DLLExecution * executor);
 
 int main(int argc, char * argv[]) {
-	ImageIO::debugFolder = "E:\\faces";
+	ImageIO::debugFolder = "../../../testsets";
 	ImageIO::isInDebugMode = true; //If set to false the ImageIO class will skip any image save function calls
 
 	RGBImageStudent rgbImage;
-	ImageIO::loadImage("E:/faces/face2.jpg", rgbImage);
+	ImageIO::loadImage("../../../testsets/Set A/TestSet Images/child-1.png", rgbImage);
 
 	std::cout << "Loaded image" << std::endl;
 	

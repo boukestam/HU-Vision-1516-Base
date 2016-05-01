@@ -49,16 +49,16 @@ IntensityImage * StudentPreProcessing::stepEdgeDetection(const IntensityImage &i
 	const int maskWidth = 3;
 	const int maskHeight = 3;
 
-	double maskData[maskHeight][maskWidth] = {
+	static double maskData[maskHeight][maskWidth] = {
 		{ 0.5, 1, 0.5 },
 		{ 1,  -6, 1   },
 		{ 0.5, 1, 0.5 }
 	};
 
-	double maskMin = -6 * 256;
-	double maskScale = 12;
+	static const double maskMin = -6 * 256;
+	static const double maskScale = 12;
 
-	ValueGrid mask = { &maskData[0][0], maskWidth, maskHeight };
+	static const ValueGrid mask = { &maskData[0][0], maskWidth, maskHeight };
 
 	IntensityImage* blurredImage = stepBlur(image);
 
@@ -96,22 +96,45 @@ ValueGrid * StudentPreProcessing::maskImage(const IntensityImage &intensityImage
 	const int totalWeight = maskImage.getTotalValue();
 	const int offsetX = (maskImage.getWidth() - 1) / 2;
 	const int offsetY = (maskImage.getHeight() - 1) / 2;
-
+	
+	const int imageSize = intensityImage.getWidth() * intensityImage.getHeight();
+	//const int offset = offsetX + offsetY * maskImage.getWidth();
 	const int newImageWidth = intensityImage.getWidth() - offsetX * 2;
 	const int newImageHeight = intensityImage.getHeight() - offsetY * 2;
+	const int newImageSize = newImageWidth * newImageHeight;
 
-	double * data = new double[newImageWidth*newImageHeight];
-	for (int x = 0; x < newImageWidth; x++){
-		for (int y = 0; y < newImageHeight; y++){
-			int totalValue = 0;
-			for (int maskX = 0; maskX < maskImage.getWidth(); maskX++){
-				for (int maskY = 0; maskY < maskImage.getHeight(); maskY++){
-					totalValue += intensityImage.getPixel(x + maskX, y + maskY) * maskImage.getValue(maskX, maskY);
+	const int maskImageSize = maskImage.getSize();
+	const int maskImageWidth = maskImage.getWidth();
+	const int maskImageHeight = maskImage.getHeight();
+
+	double * oldImageData = new double[imageSize];
+	for (int i = 0; i < imageSize; i++){
+		oldImageData[i] = intensityImage.getPixel(i);
+	}
+
+	double * maskData = maskImage.getData();
+	double * newData = new double[newImageSize];
+	for (int i = 0; i < newImageSize; i++){
+		newData[i] = 0;
+	}
+	int maskIndex = 0;
+	for (int maskX = 0; maskX < maskImageWidth; maskX++){
+		for (int maskY = 0; maskY < maskImageHeight; maskY++){
+			const double maskValue = maskData[maskIndex];
+			const int maskOffset = maskX + maskY * intensityImage.getWidth();
+			int index = 0;
+			oldImageData += maskOffset;
+			for (int newImageY = 0; newImageY < newImageHeight; newImageY++){
+				const int translateY = newImageY * intensityImage.getWidth();
+				for (int newImageX = 0; newImageX < newImageWidth; newImageX++){
+					newData[index] += oldImageData[newImageX + translateY] * maskValue;
+					index++;
 				}
 			}
-			data[x + y*newImageWidth] = totalValue;
+			oldImageData -= maskOffset;
+			maskIndex++;
 		}
 	}
 
-	return new ValueGrid(data, newImageWidth, newImageHeight);
+	return new ValueGrid(newData, newImageWidth, newImageHeight);
 }

@@ -40,3 +40,7 @@ void ValueGrid::setValue(int x, int y, double value) const{
 void ValueGrid::setValue(int i, double value) const{
 	data[i] = value;
 }
+
+double * ValueGrid::getData() const{
+	return data;
+}

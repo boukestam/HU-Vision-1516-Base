@@ -48,34 +48,50 @@ int main(int argc, char * argv[]) {
 
 	std::cout << "Grayed image" << std::endl;
 
-	StudentPreProcessing pp;
-
-	IntensityImage* edgeImage = pp.stepEdgeDetection(intensityImage);
-
-	std::cout << "Edged image" << std::endl;
-
-	IntensityImage* thresholdImage = pp.stepThresholding(*edgeImage);
-
-	std::cout << "Thresholded image" << std::endl;
-
-	StudentLocalization sl;
-	DefaultLocalization dl;
-	FeatureMap featureMap;
-
-	bool result = dl.stepFindHead(*thresholdImage, featureMap);
 	
-	std::cout << "Find head result: " << (result ? "True" : "False") << std::endl;
-
+	const int loopAmount = 100;
+	StudentPreProcessing spp;
+	DefaultPreProcessing dpp;
 	
-	debugMark(thresholdImage, featureMap.getFeature(Feature::FEATURE_HEAD_TOP).getX(), featureMap.getFeature(Feature::FEATURE_HEAD_TOP).getY());
-	debugMark(thresholdImage, featureMap.getFeature(Feature::FEATURE_HEAD_LEFT_SIDE).getX(), featureMap.getFeature(Feature::FEATURE_HEAD_LEFT_SIDE).getY());
-	debugMark(thresholdImage, featureMap.getFeature(Feature::FEATURE_HEAD_RIGHT_SIDE).getX(), featureMap.getFeature(Feature::FEATURE_HEAD_RIGHT_SIDE).getY());
+	IntensityImage* edgeImageStudent;
+	IntensityImage* thresholdImageStudent;
+	IntensityImage* edgeImageDefault;
+	IntensityImage* thresholdImageDefault;
 
-	std::cout << "Top of head: " << featureMap.getFeature(Feature::FEATURE_HEAD_TOP).getX() << ", " << featureMap.getFeature(Feature::FEATURE_HEAD_TOP).getY() << std::endl;
-	std::cout << "Left of head: " << featureMap.getFeature(Feature::FEATURE_HEAD_LEFT_SIDE).getX() << ", " << featureMap.getFeature(Feature::FEATURE_HEAD_LEFT_SIDE).getY() << std::endl;
-	std::cout << "Right of head: " << featureMap.getFeature(Feature::FEATURE_HEAD_RIGHT_SIDE).getX() << ", " << featureMap.getFeature(Feature::FEATURE_HEAD_RIGHT_SIDE).getY() << std::endl;
+	BaseTimer * timer = new BaseTimer();
+	// DefaultPreProcessing
+	timer->reset(); timer->start();
+	for (int i = 0; i < loopAmount; i++){
+		edgeImageDefault = dpp.stepEdgeDetection(intensityImage);
+	}
+	timer->stop();
+	std::cout << "Edged DefaultPreProcessing image: " << timer->elapsedMilliSeconds() / loopAmount << std::endl;
 
-	ImageIO::showImage(*thresholdImage);
+	timer->reset(); timer->start();
+	for (int i = 0; i < loopAmount; i++){
+		thresholdImageDefault = dpp.stepThresholding(*edgeImageDefault);
+	}
+	timer->stop();
+	std::cout << "Thres DefaultPreProcessing image: " << timer->elapsedMilliSeconds() / loopAmount << std::endl;
+
+	// StudentPreProcessing
+	timer->reset(); timer->start();
+	for (int i = 0; i < loopAmount; i++){
+		edgeImageStudent = spp.stepEdgeDetection(intensityImage);
+	}
+	timer->stop();
+	std::cout << "Edged StudentPreProcessing image: " << timer->elapsedMilliSeconds() / loopAmount << std::endl;
+
+	timer->reset(); timer->start();
+	for (int i = 0; i < loopAmount; i++){
+		thresholdImageStudent = spp.stepThresholding(*edgeImageStudent);
+	}
+	timer->stop();
+	std::cout << "Thres StudentPreProcessing image: " << timer->elapsedMilliSeconds() / loopAmount << std::endl;
+
+	ImageIO::showImage(*thresholdImageStudent);
+	
+
 
 	/*
 	//ImageFactory::setImplementation(ImageFactory::DEFAULT);

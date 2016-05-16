@@ -39,71 +39,8 @@ int main(int argc, char * argv[]) {
 	ImageIO::debugFolder = "../../../testsets";
 	ImageIO::isInDebugMode = true; //If set to false the ImageIO class will skip any image save function calls
 
-	RGBImageStudent rgbImage;
-	ImageIO::loadImage("../../../testsets/Set A/TestSet Images/child-1.png", rgbImage);
-
-	std::cout << "Loaded image" << std::endl;
-	
-	IntensityImage& intensityImage = rgbImage.toGrayScale();
-
-	std::cout << "Grayed image" << std::endl;
-
-	
-	const int loopAmount = 100;
-	StudentPreProcessing spp;
-	DefaultPreProcessing dpp;
-	
-	IntensityImage* edgeImageStudent;
-	IntensityImage* thresholdImageStudent;
-	IntensityImage* edgeImageDefault;
-	IntensityImage* thresholdImageDefault;
-
-	BaseTimer * timer = new BaseTimer();
-	// DefaultPreProcessing
-	timer->reset(); timer->start();
-	for (int i = 0; i < loopAmount; i++){
-		edgeImageDefault = dpp.stepEdgeDetection(intensityImage);
-	}
-	timer->stop();
-	std::cout << "Edged DefaultPreProcessing image: " << timer->elapsedMilliSeconds() / loopAmount << std::endl;
-
-	timer->reset(); timer->start();
-	for (int i = 0; i < loopAmount; i++){
-		thresholdImageDefault = dpp.stepThresholding(*edgeImageDefault);
-	}
-	timer->stop();
-	std::cout << "Thres DefaultPreProcessing image: " << timer->elapsedMilliSeconds() / loopAmount << std::endl;
-
-	// StudentPreProcessing
-	timer->reset(); timer->start();
-	for (int i = 0; i < loopAmount; i++){
-		edgeImageStudent = spp.stepEdgeDetection(intensityImage);
-	}
-	timer->stop();
-	std::cout << "Edged StudentPreProcessing image: " << timer->elapsedMilliSeconds() / loopAmount << std::endl;
-
-	timer->reset(); timer->start();
-	for (int i = 0; i < loopAmount; i++){
-		thresholdImageStudent = spp.stepThresholding(*edgeImageStudent);
-	}
-	timer->stop();
-	std::cout << "Thres StudentPreProcessing image: " << timer->elapsedMilliSeconds() / loopAmount << std::endl;
-
-	ImageIO::showImage(*thresholdImageStudent);
-	
-
-
-	/*
-	//ImageFactory::setImplementation(ImageFactory::DEFAULT);
-	ImageFactory::setImplementation(ImageFactory::STUDENT);
-
-	ImageIO::debugFolder = "E:\\faces";
-	ImageIO::isInDebugMode = true; //If set to false the ImageIO class will skip any image save function calls
-
-	std::cout << "Started loading image" << std::endl;
-
 	RGBImage * input = ImageFactory::newRGBImage();
-	if (!ImageIO::loadImage("E:\\faces\\face1.jpg", *input)) {
+	if (!ImageIO::loadImage("../../../testsets/Set A/TestSet Images/female-1.png", *input)) {
 		std::cout << "Image could not be loaded!" << std::endl;
 		system("pause");
 		return 0;
@@ -119,12 +56,68 @@ int main(int argc, char * argv[]) {
 		std::cout << "Face recognition successful!" << std::endl;
 		std::cout << "Facial parameters: " << std::endl;
 		for (int i = 0; i < 16; i++) {
-			std::cout << (i+1) << ": " << executor->facialParameters[i] << std::endl;
+			std::cout << (i + 1) << ": " << executor->facialParameters[i] << std::endl;
 		}
 	}
 
 	delete executor;
+	
+	
+	/*
+	std::cout << "Grayed image" << std::endl;
+
+	StudentPreProcessing spp;
+	IntensityImage* edgeImageBeforeThreshold = spp.stepEdgeDetection(intensityImage);
+	IntensityImage* edgeImage = spp.stepThresholding(*edgeImageBeforeThreshold);
+
+	ImageIO::showImage(*edgeImage);
+
+	FeatureMap fm;
+	DefaultLocalization dl;
+
+	dl.stepFindHead(*edgeImage, fm);
+
+	IntensityImageStudent debugHead = { *edgeImage };
+	debugMark(&debugHead, fm.getFeature(Feature::FEATURE_HEAD_LEFT_SIDE).getX(), fm.getFeature(Feature::FEATURE_HEAD_RIGHT_SIDE).getY());
+	debugMark(&debugHead, fm.getFeature(Feature::FEATURE_HEAD_RIGHT_SIDE).getX(), fm.getFeature(Feature::FEATURE_HEAD_RIGHT_SIDE).getY());
+	debugMark(&debugHead, fm.getFeature(Feature::FEATURE_HEAD_TOP).getX(), fm.getFeature(Feature::FEATURE_HEAD_TOP).getY());
+	ImageIO::showImage(debugHead);
+
+	dl.stepFindNoseMouthAndChin(*edgeImage, fm);
+
+	IntensityImageStudent debugNoseMouthAndChin = { *edgeImage };
+	debugMark(&debugNoseMouthAndChin, fm.getFeature(Feature::FEATURE_NOSE_BOTTOM).getX(), fm.getFeature(Feature::FEATURE_NOSE_BOTTOM).getY());
+	debugMark(&debugNoseMouthAndChin, fm.getFeature(Feature::FEATURE_MOUTH_TOP).getX(), fm.getFeature(Feature::FEATURE_MOUTH_TOP).getY());
+	debugMark(&debugNoseMouthAndChin, fm.getFeature(Feature::FEATURE_MOUTH_CENTER).getX(), fm.getFeature(Feature::FEATURE_MOUTH_CENTER).getY());
+	debugMark(&debugNoseMouthAndChin, fm.getFeature(Feature::FEATURE_MOUTH_BOTTOM).getX(), fm.getFeature(Feature::FEATURE_MOUTH_BOTTOM).getY());
+	debugMark(&debugNoseMouthAndChin, fm.getFeature(Feature::FEATURE_CHIN).getX(), fm.getFeature(Feature::FEATURE_CHIN).getY());
+	ImageIO::showImage(debugNoseMouthAndChin);
+
+	dl.stepFindChinContours(*edgeImage, fm);
+
+	dl.stepFindNoseEndsAndEyes(*edgeImage, fm);
+
+	IntensityImageStudent debugNoseEndsAndEyes = { *edgeImage };
+	debugMark(&debugNoseEndsAndEyes, fm.getFeature(Feature::FEATURE_NOSE_END_LEFT).getX(), fm.getFeature(Feature::FEATURE_NOSE_END_LEFT).getY());
+	debugMark(&debugNoseEndsAndEyes, fm.getFeature(Feature::FEATURE_NOSE_END_RIGHT).getX(), fm.getFeature(Feature::FEATURE_NOSE_END_RIGHT).getY());
+	debugMark(&debugNoseEndsAndEyes, fm.getFeature(Feature::FEATURE_HEAD_LEFT_NOSE_BOTTOM).getX(), fm.getFeature(Feature::FEATURE_HEAD_LEFT_NOSE_BOTTOM).getY());
+	debugMark(&debugNoseEndsAndEyes, fm.getFeature(Feature::FEATURE_HEAD_RIGHT_NOSE_BOTTOM).getX(), fm.getFeature(Feature::FEATURE_HEAD_RIGHT_NOSE_BOTTOM).getY());
+	ImageIO::showImage(debugNoseEndsAndEyes);
+
+	dl.stepFindExactEyes(*edgeImage, fm);
+
+	StudentExtraction se;
+
+	se.stepExtractNose(intensityImage, fm);
+
+	debugMark(edgeImage, fm.getFeature(Feature::FEATURE_NOSTRIL_LEFT).getX(), fm.getFeature(Feature::FEATURE_NOSTRIL_LEFT).getY());
+	debugMark(edgeImage, fm.getFeature(Feature::FEATURE_NOSTRIL_RIGHT).getX(), fm.getFeature(Feature::FEATURE_NOSTRIL_RIGHT).getY());
+
+	ImageIO::showImage(intensityImage);
 	*/
+	
+
+	
 
 	system("pause");
 	return 1;

@@ -73,23 +73,84 @@ IntensityImage * StudentPreProcessing::stepEdgeDetection(const IntensityImage &i
 	return stepToIntensityImage(*edgeValues);
 }
 
-IntensityImage * StudentPreProcessing::stepThresholding(const IntensityImage &image) const {
+IntensityImage * thresholdImage(const IntensityImage &image, int threshold) {
 	IntensityImage* newImage = new IntensityImageStudent(image.getWidth(), image.getHeight());
 
 	int numPixels = image.getWidth() * image.getHeight();
 
-	for (int i = 0; i < numPixels; i++){
+	for (int i = 0; i < numPixels; i++) {
 		Intensity value = image.getPixel(i);
 
-		if (value > 140){
-			newImage->setPixel(i, 255);
-		}
-		else{
+		if (value > threshold) {
 			newImage->setPixel(i, 0);
+		} else {
+			newImage->setPixel(i, 255);
 		}
 	}
 
 	return newImage;
+}
+
+IntensityImage * StudentPreProcessing::stepThresholding(const IntensityImage &image) const {
+	return thresholdImage(image, 140);
+}
+
+int otsuGetThreshold(int grayScaleHistogram[], int imageSize) {
+	int sum = 0;
+	for (int i = 1; i < 256; ++i) {
+		sum += i * grayScaleHistogram[i];
+	}
+
+	int sumB = 0;
+	int wB = 0;
+	int wF = 0;
+	int mB = 0;
+	int mF = 0;
+	double max = 0.0;
+	double between = 0.0;
+	double threshold1 = 0.0;
+	double threshold2 = 0.0;
+	for (int i = 0; i < 256; ++i) {
+		wB += grayScaleHistogram[i];
+		if (wB == 0) {
+			continue;
+		}
+		int wF = imageSize - wB;
+		if (wF == 0) {
+			break;
+		}
+		sumB += i * grayScaleHistogram[i];
+		mB = sumB / wB;
+		mF = (sum - sumB) / wF;
+		between = wB * wF * (mB - mF) * (mB - mF);
+		if (between >= max) {
+			threshold1 = i;
+			if (between > max) {
+				threshold2 = i;
+			}
+			max = between;
+		}
+	}
+	return (int)((threshold1 + threshold2) / 2.0);
+}
+
+IntensityImage * StudentPreProcessing::stepDynamicThresholding(const IntensityImage &image) const {
+	// Convert to histogram
+	const int grayScaleSize = 256;
+	int grayScaleHistogram[grayScaleSize];
+	for (int i = 0; i < grayScaleSize; i++) {
+		grayScaleHistogram[i] = 0;
+	}
+
+	const int imageSize = image.getWidth() * image.getHeight();
+	for (int i = 0; i < imageSize; i++) {
+		grayScaleHistogram[image.getPixel(i)] += 1;
+	}
+
+	// Get threshold
+	int newThreshold = otsuGetThreshold(grayScaleHistogram, imageSize);
+
+	return thresholdImage(image, newThreshold);
 }
 
 ValueGrid * StudentPreProcessing::maskImage(const IntensityImage &intensityImage, const ValueGrid maskImage) const {

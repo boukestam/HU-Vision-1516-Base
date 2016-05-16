@@ -17,5 +17,6 @@ public:
 	IntensityImage * StudentPreProcessing::stepBlur(const IntensityImage & image) const;
 	IntensityImage * stepEdgeDetection(const IntensityImage &image) const;
 	IntensityImage * stepThresholding(const IntensityImage &image) const;
+	IntensityImage * stepDynamicThresholding(const IntensityImage &image) const;
 	ValueGrid * maskImage(const IntensityImage &image, const ValueGrid maskImage) const;
 };

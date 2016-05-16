@@ -11,6 +11,17 @@ IntensityImageStudent::IntensityImageStudent(const IntensityImageStudent &other)
 	this->set(other);
 }
 
+IntensityImageStudent::IntensityImageStudent(const IntensityImage &other) {
+	IntensityImage::set(other.getWidth(), other.getHeight());
+
+	int numPixels = other.getWidth() * other.getHeight();
+	this->pixels = new Intensity[numPixels];
+
+	for (int i = 0; i < numPixels; i++) {
+		this->pixels[i] = other.getPixel(i);
+	}
+}
+
 IntensityImageStudent::IntensityImageStudent(const int width, const int height) : IntensityImage(width, height) {
 	IntensityImage::set(width, height);
 	this->pixels = new Intensity[width * height];

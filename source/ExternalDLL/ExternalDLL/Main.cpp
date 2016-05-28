@@ -22,25 +22,13 @@
 void drawFeatureDebugImage(IntensityImage &image, FeatureMap &features);
 bool executeSteps(DLLExecution * executor);
 
-void debugMark(IntensityImage* image, int x, int y) {
-	if (x < 0 || x >= image->getWidth() || y < 0 || y >= image->getHeight()) {
-		return;
-	}
-
-	for (int xx = x - 3; xx <= x + 3; xx++) {
-		for (int yy = y - 3; yy <= y + 3; yy++){
-			image->setPixel(xx, yy, 127);
-		}
-	}
-}
-
 int main(int argc, char * argv[]) {
 	ImageFactory::setImplementation(ImageFactory::STUDENT);
 	ImageIO::debugFolder = "../../../testsets";
 	ImageIO::isInDebugMode = true; //If set to false the ImageIO class will skip any image save function calls
 
 	RGBImage * input = ImageFactory::newRGBImage();
-	if (!ImageIO::loadImage("../../../testsets/Set A/TestSet Images/female-1.png", *input)) {
+	if (!ImageIO::loadImage("../../../testsets/Set A/TestSet Images/child-1.png", *input)) {
 		std::cout << "Image could not be loaded!" << std::endl;
 		system("pause");
 		return 0;
@@ -61,75 +49,10 @@ int main(int argc, char * argv[]) {
 	}
 
 	delete executor;
-	
-	
-	/*
-	std::cout << "Grayed image" << std::endl;
-
-	StudentPreProcessing spp;
-	IntensityImage* edgeImageBeforeThreshold = spp.stepEdgeDetection(intensityImage);
-	IntensityImage* edgeImage = spp.stepThresholding(*edgeImageBeforeThreshold);
-
-	ImageIO::showImage(*edgeImage);
-
-	FeatureMap fm;
-	DefaultLocalization dl;
-
-	dl.stepFindHead(*edgeImage, fm);
-
-	IntensityImageStudent debugHead = { *edgeImage };
-	debugMark(&debugHead, fm.getFeature(Feature::FEATURE_HEAD_LEFT_SIDE).getX(), fm.getFeature(Feature::FEATURE_HEAD_RIGHT_SIDE).getY());
-	debugMark(&debugHead, fm.getFeature(Feature::FEATURE_HEAD_RIGHT_SIDE).getX(), fm.getFeature(Feature::FEATURE_HEAD_RIGHT_SIDE).getY());
-	debugMark(&debugHead, fm.getFeature(Feature::FEATURE_HEAD_TOP).getX(), fm.getFeature(Feature::FEATURE_HEAD_TOP).getY());
-	ImageIO::showImage(debugHead);
-
-	dl.stepFindNoseMouthAndChin(*edgeImage, fm);
-
-	IntensityImageStudent debugNoseMouthAndChin = { *edgeImage };
-	debugMark(&debugNoseMouthAndChin, fm.getFeature(Feature::FEATURE_NOSE_BOTTOM).getX(), fm.getFeature(Feature::FEATURE_NOSE_BOTTOM).getY());
-	debugMark(&debugNoseMouthAndChin, fm.getFeature(Feature::FEATURE_MOUTH_TOP).getX(), fm.getFeature(Feature::FEATURE_MOUTH_TOP).getY());
-	debugMark(&debugNoseMouthAndChin, fm.getFeature(Feature::FEATURE_MOUTH_CENTER).getX(), fm.getFeature(Feature::FEATURE_MOUTH_CENTER).getY());
-	debugMark(&debugNoseMouthAndChin, fm.getFeature(Feature::FEATURE_MOUTH_BOTTOM).getX(), fm.getFeature(Feature::FEATURE_MOUTH_BOTTOM).getY());
-	debugMark(&debugNoseMouthAndChin, fm.getFeature(Feature::FEATURE_CHIN).getX(), fm.getFeature(Feature::FEATURE_CHIN).getY());
-	ImageIO::showImage(debugNoseMouthAndChin);
-
-	dl.stepFindChinContours(*edgeImage, fm);
-
-	dl.stepFindNoseEndsAndEyes(*edgeImage, fm);
-
-	IntensityImageStudent debugNoseEndsAndEyes = { *edgeImage };
-	debugMark(&debugNoseEndsAndEyes, fm.getFeature(Feature::FEATURE_NOSE_END_LEFT).getX(), fm.getFeature(Feature::FEATURE_NOSE_END_LEFT).getY());
-	debugMark(&debugNoseEndsAndEyes, fm.getFeature(Feature::FEATURE_NOSE_END_RIGHT).getX(), fm.getFeature(Feature::FEATURE_NOSE_END_RIGHT).getY());
-	debugMark(&debugNoseEndsAndEyes, fm.getFeature(Feature::FEATURE_HEAD_LEFT_NOSE_BOTTOM).getX(), fm.getFeature(Feature::FEATURE_HEAD_LEFT_NOSE_BOTTOM).getY());
-	debugMark(&debugNoseEndsAndEyes, fm.getFeature(Feature::FEATURE_HEAD_RIGHT_NOSE_BOTTOM).getX(), fm.getFeature(Feature::FEATURE_HEAD_RIGHT_NOSE_BOTTOM).getY());
-	ImageIO::showImage(debugNoseEndsAndEyes);
-
-	dl.stepFindExactEyes(*edgeImage, fm);
-
-	StudentExtraction se;
-
-	se.stepExtractNose(intensityImage, fm);
-
-	debugMark(edgeImage, fm.getFeature(Feature::FEATURE_NOSTRIL_LEFT).getX(), fm.getFeature(Feature::FEATURE_NOSTRIL_LEFT).getY());
-	debugMark(edgeImage, fm.getFeature(Feature::FEATURE_NOSTRIL_RIGHT).getX(), fm.getFeature(Feature::FEATURE_NOSTRIL_RIGHT).getY());
-
-	ImageIO::showImage(intensityImage);
-	*/
-	
-
-	
 
 	system("pause");
 	return 1;
 }
-
-
-
-
-
-
-
-
 
 
 bool executeSteps(DLLExecution * executor) {
@@ -146,13 +69,13 @@ bool executeSteps(DLLExecution * executor) {
 	}
 	ImageIO::saveIntensityImage(*executor->resultPreProcessingStep2, ImageIO::getDebugFileName("Pre-processing-2.png"));
 
-	if (!executor->executePreProcessingStep3(false)) {
+	if (!executor->executePreProcessingStep3(true)) {
 		std::cout << "Pre-processing step 3 failed!" << std::endl;
 		return false;
 	}
 	ImageIO::saveIntensityImage(*executor->resultPreProcessingStep3, ImageIO::getDebugFileName("Pre-processing-3.png"));
 
-	if (!executor->executePreProcessingStep4(false)) {
+	if (!executor->executePreProcessingStep4(true)) {
 		std::cout << "Pre-processing step 4 failed!" << std::endl;
 		return false;
 	}

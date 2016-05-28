@@ -14,9 +14,10 @@ public:
 	IntensityImage * stepToIntensityImage(const RGBImage &image) const;
 	IntensityImage * stepToIntensityImage(const ValueGrid &image) const;
 	IntensityImage * stepScaleImage(const IntensityImage &image) const;
-	IntensityImage * StudentPreProcessing::stepBlur(const IntensityImage & image) const;
+	IntensityImage * stepBlur(const IntensityImage & image) const;
 	IntensityImage * stepEdgeDetection(const IntensityImage &image) const;
 	IntensityImage * stepThresholding(const IntensityImage &image) const;
 	IntensityImage * stepDynamicThresholding(const IntensityImage &image) const;
+	IntensityImage * stepDynamicThresholding(const IntensityImage &image, int startX, int startY, int endX, int endY) const;
 	ValueGrid * maskImage(const IntensityImage &image, const ValueGrid maskImage) const;
 };

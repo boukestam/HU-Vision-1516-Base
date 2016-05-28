@@ -92,7 +92,8 @@ IntensityImage * thresholdImage(const IntensityImage &image, int threshold) {
 }
 
 IntensityImage * StudentPreProcessing::stepThresholding(const IntensityImage &image) const {
-	return thresholdImage(image, 140);
+	IntensityImage* blurredImage = stepBlur(image);
+	return thresholdImage(*blurredImage, 135);
 }
 
 int otsuGetThreshold(int grayScaleHistogram[], int imageSize) {
@@ -151,6 +152,18 @@ IntensityImage * StudentPreProcessing::stepDynamicThresholding(const IntensityIm
 	int newThreshold = otsuGetThreshold(grayScaleHistogram, imageSize);
 
 	return thresholdImage(image, newThreshold);
+}
+
+IntensityImage * StudentPreProcessing::stepDynamicThresholding(const IntensityImage &image, int startX, int startY, int endX, int endY) const {
+	IntensityImage * newImage = new IntensityImageStudent(endX - startX, endY - startY);
+
+	for (int x = 0; x < newImage->getWidth(); x++) {
+		for (int y = 0; y < newImage->getHeight(); y++) {
+			newImage->setPixel(x, y, image.getPixel(x + startX, y + startY));
+		}
+	}
+
+	return stepDynamicThresholding(*newImage);
 }
 
 ValueGrid * StudentPreProcessing::maskImage(const IntensityImage &intensityImage, const ValueGrid maskImage) const {
